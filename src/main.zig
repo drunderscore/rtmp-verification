@@ -18,7 +18,7 @@ fn handleRequestImpl(allocator: std.mem.Allocator, response: *std.http.Server.Re
 
     if (response.request.method != .POST) {
         response.status = .method_not_allowed;
-        try response.do();
+        try response.send();
 
         return error.InvalidMethod;
     }
@@ -26,13 +26,13 @@ fn handleRequestImpl(allocator: std.mem.Allocator, response: *std.http.Server.Re
     if (response.request.headers.getFirstEntry("Content-Type")) |field| {
         if (!std.mem.eql(u8, field.value, "application/x-www-form-urlencoded")) {
             response.status = .bad_request;
-            try response.do();
+            try response.send();
 
             return error.InvalidContentType;
         }
     } else {
         response.status = .bad_request;
-        try response.do();
+        try response.send();
 
         return error.MissingContentType;
     }
@@ -57,7 +57,7 @@ fn handleRequestImpl(allocator: std.mem.Allocator, response: *std.http.Server.Re
                 std.log.info("Allowing client ID {s} ({s}) requesting '{s}' to app '{s}' (key '{s}')\n", .{ client_id, address, call, application_name, name });
 
                 response.status = .ok;
-                try response.do();
+                try response.send();
 
                 return;
             }
@@ -65,12 +65,12 @@ fn handleRequestImpl(allocator: std.mem.Allocator, response: *std.http.Server.Re
 
         std.log.warn("Denying client ID {s} ({s}) requesting '{s}' to app '{s}': unauthorized key '{s}'\n", .{ client_id, address, call, application_name, name });
         response.status = .unauthorized;
-        try response.do();
+        try response.send();
     } else {
         std.log.warn("Denying client ID {s} ({s}) requesting '{s}' to app '{s}': application not found\n", .{ client_id, address, call, application_name });
 
         response.status = .not_found;
-        try response.do();
+        try response.send();
     }
 }
 

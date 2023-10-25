@@ -135,7 +135,7 @@ pub fn main() !void {
     while (true) {
         var response = server.accept(.{ .allocator = allocator }) catch |err| {
             std.log.err("Failed to accept request: {}\n", .{err});
-            std.os.exit(5);
+            continue;
         };
 
         _ = try std.Thread.spawn(.{}, handleRequest, .{ allocator, response });

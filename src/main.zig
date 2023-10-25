@@ -43,18 +43,6 @@ fn handleRequestImpl(allocator: std.mem.Allocator, response: *std.http.Server.Re
     var form_key_values = try FormKeyValues.parse(allocator, &body);
     defer form_key_values.deinit();
 
-    // nginx gives us something like this
-    // clientid: 37
-    // app: live
-    // flashver: FMLE/3.0 (compatible; FMSc/1.0)
-    // swfurl: rtmp://rtmp.firesidecasts.tv/live
-    // pageurl:
-    // call: publish
-    // addr: 71.226.242.82
-    // name: donotwatch
-    // type: live
-    // tcurl: rtmp://rtmp.firesidecasts.tv/live
-
     const client_id = form_key_values.map.get("clientid") orelse return error.MissingClientIdInForm;
     const application_name = form_key_values.map.get("app") orelse return error.MissingAppInForm;
     const call = form_key_values.map.get("call") orelse return error.MissingCallInForm;
